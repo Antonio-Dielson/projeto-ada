@@ -2,7 +2,6 @@ from utilitarios.calcular_tempo import tempo
 from utilitarios.entrada_data import validar_data
 from utilitarios.validar_generic import ValidarDadosGeneric
 
-
 def criar_registro(): #separar dia, mes e ano
     """Cria um novo registro financeiro com interação do usuário."""
 
@@ -25,25 +24,16 @@ def criar_registro(): #separar dia, mes e ano
     rendimento = None
 
     if tipo == 'Investimento':
-        while True:
-            juros = input('Digite o percentual mensal de juros do investimento:')
-            try:
-                juros = float(juros)
-                break
-            except ValueError:
-                print('Erro, digite apenas números')
-
-        montante_inicial = valor * (1+((juros)/100))**(tempo(data))
+        montante_inicial = valor * (1+0.0005)**(tempo(data))
         montante = round(montante_inicial, 2)
         rendimento_inicial = montante - valor
         rendimento = round(rendimento_inicial, 2)
 
     registro = {
-        'id': 0,
         'data': data,
         'tipo': tipo,
         'valor': valor if tipo != 'Despesa' else -valor, 
         'montante': montante,
-        'rendimento': rendimento}
-
+        'rendimento': rendimento
+                }
     return registro
