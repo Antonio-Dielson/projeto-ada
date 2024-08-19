@@ -1,6 +1,5 @@
 import json
 
-
 def salvar_registros(registros: list[dict], arquivo: str) -> None:
     '''
     Salva os registros no arquivo JSON.
