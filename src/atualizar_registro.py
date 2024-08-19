@@ -1,5 +1,26 @@
-def atualizar_registro(registros):
-    """Atualiza um registro financeiro existente com interação do usuário."""
+from datetime import datetime
+from src.atualizar_rendimento import atualiza_rendimento
+from utilitarios.calcular_tempo import tempo
+from utilitarios.entrada_data import validar_data
+from utilitarios.validacao import validar_tipo, validar_valor, validar_indice
+
+
+def atualizar_registro(registros: list[dict]) -> None:
+    '''Atualiza um registro já existente conforme solicitação do usuário.
+    
+            O usuário pode selecionar um registro financeiro de uma lista e atualizar seus valores.
+            Também pode optar em alterar o valor já existente, o tipo e a data.
+            Se o usuário deixar algum valor em branco, o valor atual do registro será mantido.
+         
+        Args:
+            registros (list[dict]): 
+                Recebe uma lista de dicionários onde cada dicionário representa um registro financeiro 
+                com as chaves 'valor', 'tipo', e 'data'.
+
+        Returns:
+            None: 
+                Não retorna nenhum valor, apenas atualiza o registro. 
+    '''
 
     if not registros:
         print("Nenhum registro encontrado.")
@@ -7,19 +28,25 @@ def atualizar_registro(registros):
 
     for i, registro in enumerate(registros):
         print(f"{i}: {registro}")
+    
+    indice = validar_indice(registros)
+    novo_valor = validar_valor()
+    novo_tipo = validar_tipo('Digite o tipo que deseja alterar. [Receita, Despesa, Investimento]: ')
+    nova_data = validar_data('Nova data: ')
 
-    indice = int(input("Índice do registro a ser atualizado: "))
+    if novo_valor:
+        registros[indice]['valor'] = float(novo_valor) if novo_tipo != 'Despesa' else -float(novo_valor)
+    if novo_tipo:
+        registros[indice]['tipo'] = novo_tipo
+    if nova_data:
+        registros[indice]['data'] = nova_data
+    registros[indice]['data_atualizacao'] = datetime.now().strftime("%d/%m/%Y")
 
-    if 0 <= indice <= len(registros):
-        novo_valor = input("Novo valor (deixe em branco para manter o atual): ")
-        novo_tipo = input("Novo tipo (deixe em branco para manter o atual): ")
-        nova_data = input("Nova data (dd/mm/aaaa, deixe em branco para manter o atual): ")
+    if novo_tipo == 'Investimento':
 
-        if novo_valor:
-            registros[indice]['valor'] = float(novo_valor) if novo_tipo != 'Despesa' else -float(novo_valor)
-        if novo_tipo:
-            registros[indice]['tipo'] = novo_tipo #caso seja Investimento tem que pedir o juros
-        if nova_data:
-            registros[indice]['data'] = nova_data
-    else:
-        print("Índice inválido.")
+        juros = 0.01
+        montante_inicial = novo_valor * (1+((juros)))**(tempo(registros[indice]['data']['data_completa']))
+        montante = round(montante_inicial, 2)
+        rendimento_inicial = montante - novo_valor
+        rendimento = round(rendimento_inicial, 2)
+    atualiza_rendimento(registros)
